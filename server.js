@@ -5,7 +5,7 @@ require('dotenv').config();
 const port=3000;
 
 //database config info
-const dbconfig = {
+const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -29,7 +29,7 @@ app.listen(port,()=> {
 // example route: get all cards
 app.get('/allcards', async(req,res)=> {
     try {
-        let connection = await mysql.createConnection(dbconfig);
+        let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT * FROM defaultdb.cards');
         res.json(rows);
     } catch (err) {
