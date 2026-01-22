@@ -26,8 +26,31 @@ app.listen(port,()=> {
     console.log('Server running on port', port);
 });
 
+const cors = require("cors");
+const allowedOrigins = [
+"http://localhost:3000",
+// "https://YOUR-frontend.vercel.app", // add later
+// "https://YOUR-frontend.onrender.com" // add later
+];
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow requests with no origin (Postman/server-to-server)
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error("Not allowed by CORS"));
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: false,
+    })
+);
+
 // example route: get all cards
-app.get('/allcards', async(req,res)=> {
+app.get('/cards', async(req,res)=> {
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute('SELECT * FROM defaultdb.cards');
@@ -39,7 +62,7 @@ app.get('/allcards', async(req,res)=> {
 });
 
 //example route: add cards
-app.post('/addcard',async(req,res)=>{
+app.post('/cards/new',async(req,res)=>{
     const {card_name,card_pic} = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
@@ -52,7 +75,7 @@ app.post('/addcard',async(req,res)=>{
 });
 
 // example route: delete card
-app.delete('/deletecard/:id',async(req,res)=> {
+app.delete('/cards/:id/edit',async(req,res)=> {
     const {id} = req.params;
     try {
         let connection = await mysql.createConnection(dbConfig);
@@ -65,7 +88,7 @@ app.delete('/deletecard/:id',async(req,res)=> {
 });
 
 // example route: update card
-app.put('/updatecard/:id',async(req,res)=> {
+app.put('/cards/:id/delete',async(req,res)=> {
     const {id} = req.params;
     const {card_name,card_pic} = req.body;
     try {
